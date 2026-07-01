@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Спортивный день · English A1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2b2340;
+    --paper:#ffffff;
+    --purple:#7c4dff;
+    --purple-d:#5a34c2;
+    --orange:#ff8a3d;
+    --orange-d:#e86f1e;
+    --blue:#3aa0ff;
+    --good:#2ec27e;
+    --good-d:#1f9c62;
+    --bad:#e4574c;
+    --bad-d:#c23a30;
+    --card:#ffffff;
+    --line:#eadff7;
+    --shadow:0 10px 26px rgba(90,52,194,.16);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Nunito',system-ui,sans-serif;
+    color:var(--ink);
+    font-style:normal;
+    background:linear-gradient(180deg,#ffe9c7 0%, #ffd6e0 100%);
+    transition:background .8s ease;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  i,em{font-style:normal}
+  #app{max-width:640px;margin:0 auto;padding:10px 12px 22px;position:relative;min-height:100vh;display:flex;flex-direction:column}
+
+  /* HUD */
+  .hud{
+    background:var(--card);border-radius:18px;box-shadow:var(--shadow);
+    padding:10px 12px;position:sticky;top:6px;z-index:20;border:2px solid var(--line);
+  }
+  .hud-top{display:flex;align-items:center;gap:8px;justify-content:space-between}
+  .stage-pill{
+    font-weight:800;font-size:13px;color:var(--purple-d);
+    background:#f2ecff;border-radius:999px;padding:5px 12px;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis;max-width:58%;
+  }
+  .score-box{display:flex;align-items:center;gap:6px;font-weight:900;color:var(--orange-d);font-size:18px}
+  .score-box .star{font-size:16px}
+  #score.bump{animation:bump .4s ease}
+  @keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.5);color:var(--good-d)}100%{transform:scale(1)}}
+
+  .bars{margin-top:8px;display:flex;flex-direction:column;gap:7px}
+  .bar-row{display:flex;align-items:center;gap:8px}
+  .bar-ico{font-size:15px;width:20px;text-align:center}
+  .bar-track{flex:1;height:12px;background:#efe8fb;border-radius:999px;overflow:hidden;position:relative}
+  .bar-fill{height:100%;width:0%;border-radius:999px;transition:width .5s ease}
+  .bar-fill.prog{background:linear-gradient(90deg,var(--purple),#b18bff)}
+  .bar-fill.energy{background:linear-gradient(90deg,var(--orange),#ffd36b)}
+  .bar-num{font-size:12px;font-weight:800;color:#8a7ea8;width:44px;text-align:right}
+
+  /* field with runner */
+  .field{margin-top:8px;height:34px;border-radius:12px;position:relative;overflow:hidden;
+    background:linear-gradient(180deg,#bdeaff 0%, #7ed957 55%, #63c246 100%);border:2px solid #d9f0c9}
+  .runner{position:absolute;bottom:2px;left:0;transition:left .6s cubic-bezier(.34,1.2,.5,1);font-size:20px}
+  .trophy{position:absolute;bottom:3px;right:4px;font-size:18px}
+
+  /* card */
+  .card{
+    background:var(--card);border-radius:20px;box-shadow:var(--shadow);
+    border:2px solid var(--line);padding:16px 14px;margin-top:12px;flex:1;
+    display:flex;flex-direction:column;
+  }
+  .prompt{font-weight:800;font-size:19px;text-align:center;margin:2px 0 12px}
+  .sub{font-weight:700;font-size:14px;color:#8a7ea8;text-align:center;margin-bottom:10px}
+
+  .scene{width:100%;max-width:300px;margin:0 auto 12px;display:block;
+    background:#fbf7ff;border:2px solid var(--line);border-radius:16px}
+  .scene svg{display:block;width:100%;height:auto}
+
+  /* options grid */
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .opts.one{grid-template-columns:1fr}
+  .opt{
+    background:#fff;border:2px solid var(--line);border-radius:14px;padding:13px 10px;
+    font-weight:800;font-size:16px;cursor:pointer;text-align:center;color:var(--ink);
+    transition:transform .08s, border-color .15s, background .15s;user-select:none;
+  }
+  .opt:hover{border-color:var(--purple)}
+  .opt:active{transform:scale(.97)}
+  .opt.correct{background:#e5f9ef;border-color:var(--good);color:var(--good-d)}
+  .opt.wrong{background:#fdecea;border-color:var(--bad);color:var(--bad-d)}
+  .opt.dim{opacity:.5}
+
+  .tf-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .tf{font-size:18px;padding:16px 10px}
+
+  /* memory */
+  .mem-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .mem{
+    background:linear-gradient(145deg,#8a5cff,#6a3ee0);color:#fff;border:none;border-radius:14px;
+    min-height:60px;font-weight:800;font-size:15px;cursor:pointer;display:flex;align-items:center;
+    justify-content:center;text-align:center;padding:8px;transition:transform .1s;
+  }
+  .mem:active{transform:scale(.96)}
+  .mem.open{background:#fff;color:var(--ink);border:2px solid var(--purple)}
+  .mem.done{background:#e5f9ef;color:var(--good-d);border:2px solid var(--good);cursor:default}
+
+  /* chips / build */
+  .bank,.tray{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:46px}
+  .tray{background:#fbf7ff;border:2px dashed var(--line);border-radius:14px;padding:10px;margin-bottom:10px}
+  .chip{
+    background:#fff;border:2px solid var(--purple);color:var(--purple-d);border-radius:12px;
+    padding:9px 13px;font-weight:800;font-size:16px;cursor:pointer;user-select:none;transition:transform .08s;
+  }
+  .chip:active{transform:scale(.94)}
+  .chip.used{opacity:.35;pointer-events:none}
+  .chip.intray{background:var(--purple);color:#fff;border-color:var(--purple)}
+
+  /* typing */
+  .field-in{display:flex;gap:8px;margin-top:6px}
+  .txt{
+    flex:1;font-family:inherit;font-weight:800;font-size:18px;color:var(--ink);
+    padding:13px 14px;border:2px solid var(--line);border-radius:14px;outline:none;font-style:normal;
+  }
+  .txt:focus{border-color:var(--purple)}
+  .anagram-letters{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px}
+  .letter{background:#fff;border:2px solid var(--orange);color:var(--orange-d);border-radius:12px;
+    width:42px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px}
+
+  /* buttons */
+  .btn{
+    font-family:inherit;font-weight:900;font-size:17px;border:none;border-radius:14px;padding:13px 18px;
+    cursor:pointer;color:#fff;background:var(--purple);box-shadow:0 5px 0 var(--purple-d);transition:transform .06s;
+  }
+  .btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--purple-d)}
+  .btn.orange{background:var(--orange);box-shadow:0 5px 0 var(--orange-d)}
+  .btn.ghost{background:#fff;color:var(--purple-d);border:2px solid var(--line);box-shadow:0 4px 0 var(--line)}
+  .btn.good{background:var(--good);box-shadow:0 5px 0 var(--good-d)}
+  .btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+  .btn.small{font-size:14px;padding:9px 12px;box-shadow:0 4px 0 var(--purple-d)}
+
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px}
+  .nav .btn.small.ghost{box-shadow:0 4px 0 var(--line)}
+
+  /* feedback panels */
+  .fb{margin-top:14px;border-radius:16px;padding:13px 14px;font-weight:800;position:relative;display:none;animation:pop .25s ease}
+  @keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  .fb.show{display:block}
+  .fb.ok{background:#e5f9ef;border:2px solid var(--good);color:var(--good-d)}
+  .fb.no{background:#fdecea;border:2px solid var(--bad);color:var(--bad-d)}
+  .fb .close{position:absolute;top:6px;right:8px;font-size:20px;cursor:pointer;line-height:1;
+    background:none;border:none;color:inherit;font-weight:900}
+  .fb .right-ans{display:block;margin-top:6px;font-size:15px}
+  .fb .hint{display:block;margin-top:4px;font-size:14px;font-weight:700;color:#8a7ea8}
+
+  .review-note{background:#fff6e6;border:2px solid #ffd79a;color:#a5691a;border-radius:14px;
+    padding:12px;font-weight:800;text-align:center;margin-top:12px}
+  .review-note b{color:var(--good-d)}
+
+  /* boss */
+  .boss-wrap{text-align:center;margin-bottom:6px}
+  .boss-emoji{font-size:60px;line-height:1;display:inline-block;transition:transform .15s}
+  .boss-emoji.hit{animation:shake .3s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px) rotate(-6deg)}75%{transform:translateX(8px) rotate(6deg)}}
+  .hp-track{height:16px;background:#ffe0dc;border-radius:999px;overflow:hidden;margin:8px auto 4px;max-width:260px;border:2px solid #f5b8b1}
+  .hp-fill{height:100%;background:linear-gradient(90deg,#e4574c,#ff8a7a);transition:width .4s ease}
+  .hp-label{font-weight:800;color:var(--bad-d);font-size:14px}
+
+  /* start & finish */
+  .screen{text-align:center;padding:20px 14px}
+  .big-emoji{font-size:66px;margin-bottom:6px}
+  .title{font-size:28px;font-weight:900;margin:4px 0 6px}
+  .lead{font-size:16px;font-weight:700;color:#6b6088;margin-bottom:8px;line-height:1.5}
+  .rules{background:#fbf7ff;border:2px solid var(--line);border-radius:16px;padding:12px 14px;text-align:left;
+    font-weight:700;font-size:15px;line-height:1.7;margin:10px auto;max-width:420px}
+  .stars-big{font-size:40px;margin:8px 0;letter-spacing:6px}
+  .toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:var(--good);color:#fff;
+    font-weight:900;padding:10px 18px;border-radius:999px;box-shadow:var(--shadow);z-index:60;opacity:0;
+    transition:opacity .2s, top .3s;font-size:16px;pointer-events:none}
+  .toast.show{opacity:1;top:22px}
+  @media (max-width:380px){
+    .prompt{font-size:17px}.opt{font-size:15px}.chip{font-size:15px}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   ДАННЫЕ (только целевая лексика + служебные слова)
+   ============================================================ */
+const ACTS = [
+  {id:"throw",  en:"throw a ball",  ru:"бросать мяч",       ving:"throwing", base:"throw",  obj:"ball", art:"a"},
+  {id:"catch",  en:"catch a ball",  ru:"ловить мяч",        ving:"catching", base:"catch",  obj:"ball", art:"a"},
+  {id:"bounce", en:"bounce a ball", ru:"стучать мячом",     ving:"bouncing", base:"bounce", obj:"ball", art:"a"},
+  {id:"watch",  en:"watch a game",  ru:"смотреть игру",     ving:"watching", base:"watch",  obj:"game", art:"a"},
+  {id:"play",   en:"play tag",      ru:"играть в салки",    ving:"playing",  base:"play",   obj:"tag",  art:""},
+];
+const byId = {}; ACTS.forEach(a=>byId[a.id]=a);
+
+// subjects for present continuous
+const SUBJ = [
+  {w:"I",   be:"am",  cf:"I'm",   ru:"Я"},
+  {w:"You", be:"are", cf:"You're",ru:"Ты"},
+  {w:"He",  be:"is",  cf:"He's",  ru:"Он"},
+  {w:"She", be:"is",  cf:"She's", ru:"Она"},
+  {w:"We",  be:"are", cf:"We're", ru:"Мы"},
+  {w:"They",be:"are", cf:"They're",ru:"Они"},
+];
+const SUBJ_SING = SUBJ.filter(s=>s.w==="He"||s.w==="She");
+const SUBJ_PL   = SUBJ.filter(s=>s.w==="They"||s.w==="We");
+
+/* ---------- helpers ---------- */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+function sample(a,n){return shuffle(a).slice(0,n);}
+function norm(s){return (s||"").toLowerCase().replace(/[.,!?;:'`’]/g," ").replace(/\s+/g," ").trim();}
+
+// object variants for flexible answers
+function objForms(act){
+  if(act.id==="play") return ["tag"];
+  const w = act.obj;
+  return ["a "+w, "the "+w, w]; // ball/game with or without article
+}
+// build all accepted present-continuous sentences for subj+act
+function pcAccepted(subj, act){
+  const bes = (subj.w==="I")?["am"]:(subj.be==="is"?["is"]:["are"]);
+  const subjForms = [subj.w]; // "He is" and "He's" both fine because we also add cf below
+  const out=[];
+  objForms(act).forEach(o=>{
+    bes.forEach(b=>{
+      out.push(`${subj.w} ${b} ${act.ving} ${o}`.trim());
+    });
+    out.push(`${subj.cf} ${act.ving} ${o}`.trim()); // contracted
+  });
+  return out.map(norm);
+}
+function pcCanonical(subj, act){
+  const o = (act.id==="play")?"tag":act.art+" "+act.obj;
+  return `${subj.w} ${subj.be} ${act.ving} ${o}`;
+}
+
+/* ============================================================
+   SVG-СЦЕНЫ  (5 действий, нарисованы, легко различимы)
+   ============================================================ */
+function scene(id){
+  const g = '<line x1="12" y1="138" x2="188" y2="138" stroke="#8a6d3b" stroke-width="4" stroke-linecap="round"/>';
+  const ball = (x,y)=>`<circle cx="${x}" cy="${y}" r="10" fill="#ff8a3d" stroke="#c0392b" stroke-width="2"/><path d="M${x-10} ${y} h20 M${x} ${y-10} v20" stroke="#c0392b" stroke-width="1.4"/>`;
+  const S = {
+    // THROW: одна рука отведена назад, мяч летит вперёд по дуге
+    throw:`<svg viewBox="0 0 200 150">${g}
+      <circle cx="66" cy="42" r="12" fill="#ffe0b8" stroke="#333" stroke-width="2"/>
+      <line x1="66" y1="54" x2="70" y2="96" stroke="#3aa0ff" stroke-width="9" stroke-linecap="round"/>
+      <line x1="70" y1="96" x2="58" y2="132" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+      <line x1="70" y1="96" x2="86" y2="132" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+      <line x1="66" y1="60" x2="48" y2="46" stroke="#ffe0b8" stroke-width="6" stroke-linecap="round"/>
+      <line x1="66" y1="62" x2="86" y2="74" stroke="#ffe0b8" stroke-width="6" stroke-linecap="round"/>
+      ${ball(48,42)}
+      <path d="M60 40 Q120 6 172 46" fill="none" stroke="#c0392b" stroke-width="2.4" stroke-dasharray="5 5"/>
+      <polygon points="172,46 162,40 170,34" fill="#c0392b"/></svg>`,
+    // CATCH: обе руки подняты вверх «V», мяч падает сверху в руки
+    catch:`<svg viewBox="0 0 200 150">${g}
+      <circle cx="100" cy="64" r="12" fill="#ffe0b8" stroke="#333" stroke-width="2"/>
+      <line x1="100" y1="76" x2="100" y2="110" stroke="#ff5da2" stroke-width="9" stroke-linecap="round"/>
+      <line x1="100" y1="110" x2="88" y2="134" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+      <line x1="100" y1="110" x2="112" y2="134" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+      <line x1="100" y1="82" x2="80" y2="52" stroke="#ffe0b8" stroke-width="6" stroke-linecap="round"/>
+      <line x1="100" y1="82" x2="120" y2="52" stroke="#ffe0b8" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="80" cy="50" r="5" fill="#ffe0b8" stroke="#333" stroke-width="1.6"/>
+      <circle cx="120" cy="50" r="5" fill="#ffe0b8" stroke="#333" stroke-width="1.6"/>
+      ${ball(100,24)}
+      <path d="M100 36 L100 44" stroke="#c0392b" stroke-width="2.4" stroke-dasharray="4 4"/>
+      <polygon points="100,46 95,38 105,38" fill="#c0392b"/></svg>`,
+    // BOUNCE: рука вниз, мяч у самой земли + дуги отскока
+    bounce:`<svg viewBox="0 0 200 150">${g}
+      <circle cx="74" cy="42" r="12" fill="#ffe0b8" stroke="#333" stroke-width="2"/>
+      <line x1="74" y1="54" x2="76" y2="96" stroke="#7c4dff" stroke-width="9" stroke-linecap="round"/>
+      <line x1="76" y1="96" x2="64" y2="132" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+      <line x1="76" y1="96" x2="90" y2="132" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+      <line x1="74" y1="60" x2="60" y2="46" stroke="#ffe0b8" stroke-width="6" stroke-linecap="round"/>
+      <line x1="74" y1="62" x2="104" y2="96" stroke="#ffe0b8" stroke-width="6" stroke-linecap="round"/>
+      ${ball(120,124)}
+      <path d="M106 98 Q113 116 120 122" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-dasharray="4 4"/>
+      <path d="M120 122 Q135 96 150 122" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-dasharray="4 4"/>
+      <polygon points="150,122 143,116 152,113" fill="#c0392b"/></svg>`,
+    // WATCH: зритель смотрит на поле с мячом (линия взгляда)
+    watch:`<svg viewBox="0 0 200 150">${g}
+      <rect x="104" y="70" width="84" height="56" rx="6" fill="#2ec27e"/>
+      <line x1="146" y1="70" x2="146" y2="126" stroke="#eafff2" stroke-width="2"/>
+      <rect x="150" y="78" width="30" height="24" fill="none" stroke="#ffffff" stroke-width="3" rx="2"/>
+      ${ball(124,110)}
+      <circle cx="46" cy="52" r="14" fill="#ffe0b8" stroke="#333" stroke-width="2"/>
+      <circle cx="41" cy="50" r="4.5" fill="#fff" stroke="#333" stroke-width="1.4"/><circle cx="43" cy="50" r="2" fill="#333"/>
+      <circle cx="53" cy="50" r="4.5" fill="#fff" stroke="#333" stroke-width="1.4"/><circle cx="55" cy="50" r="2" fill="#333"/>
+      <line x1="46" y1="66" x2="46" y2="104" stroke="#ff8a3d" stroke-width="9" stroke-linecap="round"/>
+      <line x1="46" y1="104" x2="36" y2="132" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+      <line x1="46" y1="104" x2="56" y2="132" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+      <line x1="58" y1="58" x2="118" y2="98" stroke="#3aa0ff" stroke-width="2.2" stroke-dasharray="5 5"/></svg>`,
+    // PLAY TAG: один догоняет, второй убегает, рука тянется к спине
+    play:`<svg viewBox="0 0 200 150">${g}
+      <!-- runner (right) -->
+      <circle cx="140" cy="44" r="12" fill="#ffe0b8" stroke="#333" stroke-width="2"/>
+      <line x1="140" y1="56" x2="150" y2="92" stroke="#ff8a3d" stroke-width="9" stroke-linecap="round"/>
+      <line x1="150" y1="92" x2="166" y2="120" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+      <line x1="150" y1="92" x2="140" y2="126" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+      <line x1="146" y1="66" x2="166" y2="60" stroke="#ffe0b8" stroke-width="6" stroke-linecap="round"/>
+      <line x1="146" y1="68" x2="130" y2="80" stroke="#ffe0b8" stroke-width="6" stroke-linecap="round"/>
+      <path d="M176 62 h12 M178 74 h12 M176 86 h12" stroke="#3aa0ff" stroke-width="3" stroke-linecap="round"/>
+      <!-- chaser (left) -->
+      <circle cx="62" cy="48" r="12" fill="#ffe0b8" stroke="#333" stroke-width="2"/>
+      <line x1="62" y1="60" x2="66" y2="96" stroke="#7c4dff" stroke-width="9" stroke-linecap="round"/>
+      <line x1="66" y1="96" x2="54" y2="126" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+      <line x1="66" y1="96" x2="80" y2="124" stroke="#333" stroke-width="6" stroke-linecap="round"/>
+      <line x1="62" y1="66" x2="46" y2="80" stroke="#ffe0b8" stroke-width="6" stroke-linecap="round"/>
+      <line x1="62" y1="66" x2="104" y2="72" stroke="#ffe0b8" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="108" cy="72" r="5" fill="#ffe0b8" stroke="#333" stroke-width="1.6"/></svg>`,
+  };
+  return `<div class="scene">${S[id]}</div>`;
+}
+
+/* ============================================================
+   ГЕНЕРАЦИЯ ЗАДАНИЙ
+   ============================================================ */
+function buildTasks(){
+  const T = [];
+  const stage = (name)=>name;
+
+  /* ---- STAGE 1: Разминка — картинка → фраза (5 вариантов) ---- */
+  {
+    const st="Разминка 🏃";
+    // каждое действие 3 раза, порядок и варианты перемешаны
+    let seq=[];
+    for(let r=0;r<3;r++) seq = seq.concat(shuffle(ACTS.slice()));
+    seq.forEach(a=>{
+      T.push({
+        stage:st, type:"quiz",
+        prompt:"Что на картинке?", scene:a.id,
+        options: shuffle(ACTS.map(x=>x.en)),
+        answer: a.en,
+      });
+    });
+  }
+
+  /* ---- STAGE 2: Память — рус ↔ англ ---- */
+  {
+    const st="Найди пару 🧠";
+    for(let r=0;r<6;r++){
+      T.push({ stage:st, type:"memory", pairs: ACTS.map(a=>({ru:a.ru,en:a.en})) });
+    }
+  }
+
+  /* ---- STAGE 3: Что он делает? — грамм. выбор (6 вариантов, Present Continuous) ---- */
+  {
+    const st="Что происходит? 👀";
+    // одиночная фигура -> He/She; пара (play) -> They
+    const combos=[];
+    ACTS.forEach(a=>{
+      const subs = (a.id==="play")? [byId.play?SUBJ.find(s=>s.w==="They"):null].filter(Boolean) : SUBJ_SING;
+      subs.forEach(s=>combos.push({a,s}));
+    });
+    // добавим также They/We для не-play чтобы получить 6 опций разнообразнее
+    ACTS.filter(a=>a.id!=="play").forEach(a=>{ combos.push({a, s:SUBJ.find(s=>s.w==="They")}); });
+    shuffle(combos).forEach(({a,s})=>{
+      // 6 опций: правильная + 5 отвлекающих (меняем глагол и подлежащее)
+      const correct = pcCanonical(s,a);
+      const pool = new Set([correct]);
+      // другие действия с тем же подлежащим
+      shuffle(ACTS.filter(x=>x.id!==a.id)).forEach(x=>{ if(pool.size<4) pool.add(pcCanonical(s,x)); });
+      // другое подлежащее с тем же действием
+      shuffle(SUBJ.filter(z=>z.w!==s.w)).forEach(z=>{ if(pool.size<6) pool.add(pcCanonical(z,a)); });
+      T.push({
+        stage:st, type:"quiz",
+        prompt:(s.w==="They"?"Что они делают?":"Что "+(s.w==="She"?"она":"он")+" делает?"),
+        scene:a.id,
+        options: shuffle([...pool]),
+        answer: correct,
+      });
+    });
+  }
+
+  /* ---- STAGE 4: Правда или ложь ---- */
+  {
+    const st="Правда или ложь? ✅❌";
+    const combos=[];
+    ACTS.forEach(a=>{
+      const subs = (a.id==="play")? [SUBJ.find(s=>s.w==="They")] : SUBJ_SING;
+      subs.forEach(s=>{
+        combos.push({a,s,truth:true});                       // совпадает с картинкой
+        const other = sample(ACTS.filter(x=>x.id!==a.id),1)[0];
+        combos.push({a,s,truth:false,shown:other});          // не совпадает
+      });
+    });
+    shuffle(combos).forEach(({a,s,truth,shown})=>{
+      const named = truth?a:shown;
+      const sent = pcCanonical(s,named);
+      T.push({
+        stage:st, type:"tf",
+        prompt:"Это правда?", scene:a.id,
+        sentence: sent, answer: truth,
+        correctSentence: pcCanonical(s,a),
+      });
+    });
+  }
+
+  /* ---- STAGE 5: Собери предложение (Present Continuous) ---- */
+  {
+    const st="Собери предложение 🧩";
+    const combos=[];
+    ACTS.forEach(a=>{
+      const subs = (a.id==="play")? [SUBJ.find(s=>s.w==="They"), SUBJ.find(s=>s.w==="We")] : shuffle(SUBJ).slice(0,4);
+      subs.forEach(s=>combos.push({a,s}));
+    });
+    shuffle(combos).slice(0,18).forEach(({a,s})=>{
+      const obj = (a.id==="play")? ["tag"] : ["a", a.obj];
+      const chips = [s.w, s.be, a.ving].concat(obj);
+      T.push({
+        stage:st, type:"build",
+        prompt:"Собери предложение", scene:a.id,
+        hintRu:`${s.ru}: ${a.ru}`,
+        chips: shuffle(chips),
+        accepted: pcAccepted(s,a),
+        canonical: pcCanonical(s,a),
+      });
+    });
+  }
+
+  /* ---- STAGE 6: Вставь слово ---- */
+  {
+    const st="Вставь слово 🔤";
+    // 6a: пропущен be (am/is/are)
+    const beCombos=[];
+    ACTS.forEach(a=>{
+      const subs = (a.id==="play")? [SUBJ.find(s=>s.w==="They")] : shuffle(SUBJ).slice(0,2);
+      subs.forEach(s=>beCombos.push({a,s}));
+    });
+    shuffle(beCombos).slice(0,9).forEach(({a,s})=>{
+      const o=(a.id==="play")?"tag":"a "+a.obj;
+      T.push({
+        stage:st, type:"quiz",
+        prompt:"Какое слово подходит?", scene:a.id,
+        line:`${s.w} ___ ${a.ving} ${o}.`,
+        options: shuffle(["am","is","are"]),
+        answer: s.w==="I"?"am":(s.be),
+      });
+    });
+    // 6b: пропущен глагол (-ing) — только действия с "a ball", варианты сочетаются с картинкой
+    const ballActs = ACTS.filter(a=>a.obj==="ball");
+    let vseq=[];
+    for(let r=0;r<3;r++) vseq=vseq.concat(shuffle(ballActs));
+    vseq.slice(0,9).forEach(a=>{
+      const s = sample(SUBJ_SING,1)[0];
+      T.push({
+        stage:st, type:"quiz",
+        prompt:"Что "+(s.w==="She"?"она":"он")+" делает? Выбери слово", scene:a.id,
+        line:`${s.w} ${s.be} ___ a ball.`,
+        options: shuffle(ballActs.map(x=>x.ving)),
+        answer: a.ving,
+      });
+    });
+  }
+
+  /* ---- STAGE 7: Буквы рассыпались (анаграмма) ---- */
+  {
+    const st="Буквы рассыпались 🔡";
+    const words = [
+      {w:"throw", ru:"бросать"},{w:"catch", ru:"ловить"},{w:"bounce", ru:"стучать мячом"},
+      {w:"watch", ru:"смотреть"},{w:"play", ru:"играть"},{w:"ball", ru:"мяч"},
+      {w:"game", ru:"игра"},{w:"tag", ru:"салки"},
+    ];
+    let wseq=[];
+    for(let r=0;r<2;r++) wseq=wseq.concat(shuffle(words));
+    wseq.slice(0,14).forEach(it=>{
+      let sc; do{ sc = shuffle(it.w.split("")).join(""); }while(sc===it.w && it.w.length>1);
+      T.push({ stage:st, type:"anagram", prompt:"Собери слово", hintRu:it.ru, scrambled:sc, answer:it.w });
+    });
+  }
+
+  /* ---- STAGE 8: Напечатай (по картинке) ---- */
+  {
+    const st="Напечатай ⌨️";
+    // 8a: короткая фраза действия
+    let a1=[]; for(let r=0;r<2;r++) a1=a1.concat(shuffle(ACTS));
+    a1.slice(0,8).forEach(a=>{
+      const acc = objForms(a).map(o=> a.base+" "+o ).concat(objForms(a).map(o=>"to "+a.base+" "+o));
+      T.push({
+        stage:st, type:"type", scene:a.id,
+        prompt:"Напечатай, что это", sub:"по-английски, 2 попытки",
+        accepted: acc.map(norm), canonical: a.en, placeholder:"…",
+      });
+    });
+    // 8b: закончи предложение "He is ___" -> ving + object
+    let a2=[]; ACTS.forEach(a=>{
+      if(a.id==="play"){ a2.push({a,s:SUBJ.find(x=>x.w==="They")}); a2.push({a,s:SUBJ.find(x=>x.w==="We")}); }
+      else { sample(SUBJ_SING,2).forEach(s=>a2.push({a,s})); }
+    });
+    a2 = shuffle(a2).slice(0,8);
+    a2.forEach(({a,s})=>{
+      const objs = objForms(a);
+      const acc = objs.map(o=> a.ving+" "+o );
+      T.push({
+        stage:st, type:"type", scene:a.id,
+        prompt:`Закончи: ${s.w} ${s.be} …`, sub:"напечатай, что "+(s.w==="They"?"они делают":s.w==="We"?"мы делаем":(s.w==="She"?"она делает":"он делает")),
+        accepted: acc.map(norm),
+        canonical: (a.id==="play")?"playing tag":`${a.ving} a ${a.obj}`,
+        placeholder:"…",
+      });
+    });
+  }
+
+  /* ---- STAGE 9: Финальный босс ---- */
+  {
+    const st="Финальный босс 🏆";
+    // пул вопросов для босса (перемешанные типы, авто-проверка выбором)
+    const bank=[];
+    ACTS.forEach(a=>{
+      bank.push({q:"Как по-английски: «"+a.ru+"»?", opts: shuffle(ACTS.map(x=>x.en)), ans:a.en});
+      const s=sample(SUBJ_SING.concat([SUBJ.find(x=>x.w==="They")]),1)[0];
+      bank.push({q:"«"+s.ru+" "+a.ru+"» сейчас — это…", opts: shuffle([pcCanonical(s,a)].concat(sample(ACTS.filter(x=>x.id!==a.id),2).map(x=>pcCanonical(s,x))).concat([pcCanonical(sample(SUBJ.filter(z=>z.w!==s.w),1)[0],a)])), ans:pcCanonical(s,a)});
+    });
+    T.push({ stage:st, type:"boss", hp:12, bank: shuffle(bank) });
+  }
+
+  return T;
+}
+
+/* ============================================================
+   СОСТОЯНИЕ ИГРЫ
+   ============================================================ */
+let TASKS = [];
+let idx = 0;         // текущий индекс
+let maxIdx = 0;      // самый дальний достигнутый (активный)
+let score = 0;
+let correct = 0;     // число верных
+let totalScored = 0; // общее число оценённых заданий (для звёзд)
+let energy = 0;      // 0..100
+const snaps = {};    // снимки ответов для режима просмотра: idx -> {given, ok, correctText, kind}
+
+const app = document.getElementById("app");
+const toastEl = document.getElementById("toast");
+
+function toast(msg){
+  toastEl.textContent = msg; toastEl.classList.add("show");
+  clearTimeout(toast._t); toast._t=setTimeout(()=>toastEl.classList.remove("show"),1100);
+}
+
+/* максимум оценённых заданий: считаем каждый linear-скрин; память = 5 пар; босс = hp */
+function computeTotals(){
+  let n=0;
+  TASKS.forEach(t=>{
+    if(t.type==="memory") n+=t.pairs.length;
+    else if(t.type==="boss") n+=t.hp;
+    else n+=1;
+  });
+  totalScored=n;
+}
+const MAXSCORE = ()=> totalScored*10;
+function starThresholds(){ const m=MAXSCORE(); return {three:Math.round(m*.9), two:Math.round(m*.7), one:Math.round(m*.5)}; }
+
+/* ============================================================
+   HUD
+   ============================================================ */
+function hudHTML(){
+  const t = TASKS[Math.min(idx,TASKS.length-1)];
+  const stageName = t? t.stage : "";
+  const scoredSoFar = countScoredBefore(idx);
+  const prog = totalScored? Math.min(100, Math.round(scoredSoFar/totalScored*100)) : 0;
+  const runnerPos = 4 + energy*0.9; // %
+  return `
+  <div class="hud">
+    <div class="hud-top">
+      <div class="stage-pill">${stageName}</div>
+      <div class="score-box"><span class="star">⭐️</span><span id="score">${score}</span></div>
+    </div>
+    <div class="bars">
+      <div class="bar-row"><span class="bar-ico">🎯</span>
+        <div class="bar-track"><div class="bar-fill prog" style="width:${prog}%"></div></div>
+        <span class="bar-num">${scoredSoFar}/${totalScored}</span></div>
+      <div class="bar-row"><span class="bar-ico">⚡️</span>
+        <div class="bar-track"><div class="bar-fill energy" id="energyBar" style="width:${energy}%"></div></div>
+        <span class="bar-num">${Math.round(energy)}%</span></div>
+    </div>
+    <div class="field">
+      <div class="runner" id="runner" style="left:calc(${runnerPos}% - 10px)">🏃</div>
+      <div class="trophy">🏆</div>
+    </div>
+  </div>`;
+}
+// сколько оценённых заданий пройдено до индекса i (для прогресса)
+function countScoredBefore(i){
+  let n=0;
+  for(let k=0;k<i && k<TASKS.length;k++){
+    const t=TASKS[k];
+    if(t.type==="memory") n+=t.pairs.length;
+    else if(t.type==="boss") n+=(snaps[k]?snaps[k].bossHits||t.hp:t.hp);
+    else n+=1;
+  }
+  // частичный прогресс текущего memory/boss
+  return n;
+}
+
+/* ============================================================
+   РЕНДЕР
+   ============================================================ */
+function render(){
+  if(idx>=TASKS.length){ return renderFinish(); }
+  const reviewing = idx < maxIdx;
+  const t = TASKS[idx];
+  let body="";
+  if(reviewing && t.type!=="memory" && t.type!=="boss"){
+    body = renderReview(t);
+  } else {
+    switch(t.type){
+      case "quiz":    body=renderQuiz(t); break;
+      case "tf":      body=renderTF(t); break;
+      case "memory":  body=renderMemory(t); break;
+      case "build":   body=renderBuild(t); break;
+      case "anagram": body=renderAnagram(t); break;
+      case "type":    body=renderType(t); break;
+      case "boss":    body=renderBoss(t); break;
+    }
+  }
+  app.innerHTML = hudHTML() + `<div class="card" id="card">${body}</div>` + navHTML();
+  attachHandlers(t, reviewing);
+}
+
+function navHTML(){
+  const canBack = idx>0;
+  const canFwd = idx<maxIdx;
+  return `<div class="nav">
+    <button class="btn small ghost" id="backBtn" ${canBack?"":"disabled style='opacity:.4'"}>◀ Назад</button>
+    <span style="font-weight:800;color:#8a7ea8;font-size:13px">${idx<maxIdx?"Просмотр":"Задание "+(idx+1)}</span>
+    <button class="btn small ${canFwd?"good":"ghost"}" id="fwdBtn" ${canFwd?"":"disabled style='opacity:.4'"}>${canFwd?"Вперёд ▶":"▶"}</button>
+  </div>`;
+}
+
+/* ---------- REVIEW ---------- */
+function renderReview(t){
+  const s = snaps[idx]||{};
+  const sc = t.scene? scene(t.scene):"";
+  const line = t.line? `<div class="prompt">${t.line.replace("___","<b style='color:#7c4dff'>____</b>")}</div>`:"";
+  return `${line}${sc}
+    <div class="review-note">
+      Твой ответ: <b style="color:${s.ok?'var(--good-d)':'var(--bad-d)'}">${s.given||"—"}</b> ${s.ok?"✅":"❌"}
+      ${s.ok?"":`<div style="margin-top:6px;color:#a5691a">Правильно: <b>${s.correctText||""}</b></div>`}
+    </div>`;
+}
+
+/* ---------- QUIZ ---------- */
+function renderQuiz(t){
+  const sc = t.scene? scene(t.scene):"";
+  const line = t.line? `<div class="prompt">${t.line.replace("___","<b style='color:#7c4dff'>____</b>")}</div>`:"";
+  const many = t.options.length>3;
+  return `<div class="sub">${t.prompt}</div>${sc}${line}
+    <div class="opts ${many?"":"one"}">
+      ${t.options.map((o,i)=>`<button class="opt" data-o="${encodeURIComponent(o)}">${o}</button>`).join("")}
+    </div>
+    <div class="fb" id="fb"></div>`;
+}
+
+/* ---------- TRUE / FALSE ---------- */
+function renderTF(t){
+  return `<div class="sub">${t.prompt}</div>${scene(t.scene)}
+    <div class="prompt">${t.sentence}</div>
+    <div class="tf-row">
+      <button class="opt tf" data-v="1">✅ Правда</button>
+      <button class="opt tf" data-v="0">❌ Ложь</button>
+    </div>
+    <div class="fb" id="fb"></div>`;
+}
+
+/* ---------- MEMORY ---------- */
+function renderMemory(t){
+  // строим карточки один раз на заход
+  if(!t._cards || t._fresh===false){
+    const cards=[];
+    t.pairs.forEach((p,i)=>{ cards.push({k:i,t:"ru",txt:p.ru}); cards.push({k:i,t:"en",txt:p.en}); });
+    t._cards = shuffle(cards);
+    t._done = new Set(); t._open=null; t._lock=false; t._fresh=false;
+  }
+  return `<div class="sub">Найди пары: слово и перевод</div>
+    <div class="mem-grid" id="memGrid">
+      ${t._cards.map((c,i)=>{
+        const done=t._done.has(i);
+        return `<button class="mem ${done?'done':''}" data-i="${i}" ${done?'disabled':''}>${done?'✔':c.txt}</button>`;
+      }).join("")}
+    </div>
+    <div class="fb" id="fb"></div>`;
+}
+
+/* ---------- BUILD ---------- */
+function renderBuild(t){
+  if(!t._state){ t._state={tray:[], used:new Array(t.chips.length).fill(false), tries:0}; }
+  const st=t._state;
+  return `<div class="sub">${t.prompt}</div>${scene(t.scene)}<div class="sub" style="color:#7c4dff">Подсказка: ${t.hintRu||""}</div>
+    <div class="tray" id="tray">${st.tray.map(ci=>`<span class="chip intray" data-ci="${ci}">${t.chips[ci]}</span>`).join("")||'<span style="color:#b7add0;font-weight:700">нажимай на слова…</span>'}</div>
+    <div class="bank" id="bank">${t.chips.map((c,i)=>`<span class="chip ${st.used[i]?'used':''}" data-i="${i}">${c}</span>`).join("")}</div>
+    <div class="btn-row">
+      <button class="btn small ghost" id="resetBuild">↺ Сбросить</button>
+      <button class="btn small orange" id="checkBuild">Проверить</button>
+    </div>
+    <div class="fb" id="fb"></div>`;
+}
+
+/* ---------- ANAGRAM ---------- */
+function renderAnagram(t){
+  return `<div class="sub">${t.prompt} · подсказка: «${t.hintRu}»</div>
+    <div class="anagram-letters">${t.scrambled.split("").map(l=>`<div class="letter">${l.toUpperCase()}</div>`).join("")}</div>
+    <div class="field-in">
+      <input class="txt" id="anaIn" placeholder="напиши слово" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button class="btn orange" id="anaCheck">✓</button>
+    </div>
+    <div class="fb" id="fb"></div>`;
+}
+
+/* ---------- TYPE ---------- */
+function renderType(t){
+  const sc = t.scene? scene(t.scene):"";
+  return `<div class="sub">${t.prompt}${t.sub?` · <span style="color:#b7add0">${t.sub}</span>`:""}</div>${sc}
+    <div class="field-in">
+      <input class="txt" id="typeIn" placeholder="${t.placeholder||"напечатай…"}" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button class="btn orange" id="typeCheck">✓</button>
+    </div>
+    <div class="fb" id="fb"></div>`;
+}
+
+/* ---------- BOSS ---------- */
+function renderBoss(t){
+  if(!t._state){ t._state={hp:t.hp, qi:0, hits:0}; }
+  const st=t._state;
+  const q = t.bank[st.qi % t.bank.length];
+  t._cur = q;
+  const hpPct = Math.max(0, st.hp/t.hp*100);
+  return `<div class="boss-wrap">
+      <div class="boss-emoji" id="bossE">🐲</div>
+      <div class="hp-track"><div class="hp-fill" style="width:${hpPct}%"></div></div>
+      <div class="hp-label">HP: ${st.hp} / ${t.hp}</div>
+    </div>
+    <div class="prompt">${q.q}</div>
+    <div class="opts ${q.opts.length>3?"":"one"}">
+      ${q.opts.map(o=>`<button class="opt" data-o="${encodeURIComponent(o)}">${o}</button>`).join("")}
+    </div>
+    <div class="fb" id="fb"></div>`;
+}
+
+/* ============================================================
+   ФИДБЕК / ОЧКИ / ЭНЕРГИЯ
+   ============================================================ */
+function addScore(){
+  score+=10; correct+=1;
+  bumpEnergy();
+  const el=document.getElementById("score");
+  if(el){ el.textContent=score; el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+}
+function bumpEnergy(){
+  energy = Math.min(100, energy + 100/Math.max(1,totalScored));
+  const eb=document.getElementById("energyBar"); if(eb) eb.style.width=energy+"%";
+  const rn=document.getElementById("runner"); if(rn) rn.style.left=`calc(${4+energy*0.9}% - 10px)`;
+}
+function showFB(ok, correctText, hint){
+  const fb=document.getElementById("fb"); if(!fb) return;
+  fb.className="fb "+(ok?"ok":"no")+" show";
+  fb.innerHTML = ok
+    ? `ВЕРНО! +10 ⭐️`
+    : `<button class="close" aria-label="закрыть">✕</button>Не верно.
+        <span class="right-ans">Правильный ответ: <b>${correctText}</b></span>
+        ${hint?`<span class="hint">${hint}</span>`:""}`;
+  if(!ok){
+    fb.querySelector(".close").onclick=()=>{ fb.classList.remove("show"); showNext(true); };
+    // добавим кнопку "Дальше" под панелью
+    if(!document.getElementById("nextAfterWrong")){
+      const b=document.createElement("button");
+      b.className="btn good small"; b.id="nextAfterWrong"; b.textContent="Дальше ▶";
+      b.style.marginTop="10px"; b.style.display="block"; b.style.marginLeft="auto"; b.style.marginRight="auto";
+      b.onclick=()=>showNext(true);
+      fb.parentNode.appendChild(b);
+    }
+  }
+}
+// зафиксировать ответ и уйти дальше
+function commit(ok, given, correctText, autoDelay){
+  snaps[idx]={given, ok, correctText};
+  if(ok) addScore();
+  if(ok){
+    // авто-переход
+    setTimeout(()=>showNext(true), autoDelay||1300);
+  }
+}
+function showNext(force){
+  if(idx>=maxIdx){ maxIdx=Math.min(idx+1, TASKS.length); idx=maxIdx; }
+  else { idx=Math.min(idx+1, maxIdx); }
+  if(idx>=TASKS.length){ return renderFinish(); }
+  render();
+}
+
+/* ============================================================
+   ОБРАБОТЧИКИ
+   ============================================================ */
+function lockOpts(){ document.querySelectorAll(".opt").forEach(o=>o.style.pointerEvents="none"); }
+
+function attachHandlers(t, reviewing){
+  document.getElementById("backBtn")?.addEventListener("click",()=>{ if(idx>0){ idx--; render(); }});
+  document.getElementById("fwdBtn")?.addEventListener("click",()=>{ if(idx<maxIdx){ idx++; render(); }});
+  if(reviewing && t.type!=="memory" && t.type!=="boss") return;
+
+  if(t.type==="quiz"){
+    document.querySelectorAll(".opt").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const chosen=decodeURIComponent(btn.dataset.o);
+        const ok = norm(chosen)===norm(t.answer);
+        lockOpts();
+        btn.classList.add(ok?"correct":"wrong");
+        if(!ok){ document.querySelectorAll(".opt").forEach(o=>{ if(norm(decodeURIComponent(o.dataset.o))===norm(t.answer)) o.classList.add("correct"); }); }
+        showFB(ok, t.answer);
+        commit(ok, chosen, t.answer);
+      });
+    });
+  }
+
+  if(t.type==="tf"){
+    document.querySelectorAll(".opt").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const v = btn.dataset.v==="1";
+        const ok = v===t.answer;
+        lockOpts(); btn.classList.add(ok?"correct":"wrong");
+        const ct = t.answer? "Правда":"Ложь";
+        showFB(ok, ct + (t.answer?"":` · верно: «${t.correctSentence}»`));
+        commit(ok, v?"Правда":"Ложь", ct);
+      });
+    });
+  }
+
+  if(t.type==="memory"){
+    const grid=document.getElementById("memGrid");
+    grid?.querySelectorAll(".mem").forEach(cell=>{
+      cell.addEventListener("click",()=>{
+        if(t._lock) return;
+        const i=+cell.dataset.i;
+        if(t._done.has(i)) return;
+        if(t._open===null){ t._open=i; cell.classList.add("open"); cell.textContent=t._cards[i].txt; return; }
+        if(t._open===i) return;
+        const a=t._cards[t._open], b=t._cards[i];
+        cell.classList.add("open"); cell.textContent=t._cards[i].txt;
+        if(a.k===b.k && a.t!==b.t){
+          // совпало
+          t._done.add(t._open); t._done.add(i);
+          const oi=t._open; t._open=null;
+          setTimeout(()=>{
+            grid.querySelector(`[data-i="${oi}"]`)?.classList.add("done");
+            grid.querySelector(`[data-i="${i}"]`)?.classList.add("done");
+            grid.querySelector(`[data-i="${oi}"]`)?.setAttribute("disabled","");
+            grid.querySelector(`[data-i="${i}"]`)?.setAttribute("disabled","");
+            addScore(); toast("Пара! +10 ⭐️");
+            if(t._done.size===t._cards.length){
+              // раунд завершён
+              snaps[idx]={given:"все пары",ok:true,correctText:""};
+              setTimeout(()=>{ t._fresh=undefined; showNext(true); },700);
+            }
+          },320);
+        } else {
+          // не совпало
+          t._lock=true;
+          const oi=t._open; t._open=null;
+          setTimeout(()=>{
+            const c1=grid.querySelector(`[data-i="${oi}"]`), c2=grid.querySelector(`[data-i="${i}"]`);
+            if(c1){ c1.classList.remove("open"); c1.textContent=t._cards[oi].txt; }
+            // показать текст обратно — но карточки должны прятаться:
+            if(c1){ c1.textContent=t._cards[oi].txt; }
+            if(c2){ c2.classList.remove("open"); c2.textContent=t._cards[i].txt; }
+            t._lock=false;
+          },700);
+        }
+      });
+    });
+  }
+
+  if(t.type==="build"){
+    const st=t._state;
+    const rerender=()=>{ render(); };
+    document.querySelectorAll("#bank .chip").forEach(ch=>{
+      ch.addEventListener("click",()=>{
+        const i=+ch.dataset.i; if(st.used[i]) return;
+        st.used[i]=true; st.tray.push(i); rerender();
+      });
+    });
+    document.querySelectorAll("#tray .chip").forEach(ch=>{
+      ch.addEventListener("click",()=>{
+        const ci=+ch.dataset.ci; const pos=st.tray.indexOf(ci);
+        if(pos>-1){ st.tray.splice(pos,1); st.used[ci]=false; rerender(); }
+      });
+    });
+    document.getElementById("resetBuild")?.addEventListener("click",()=>{ st.tray=[]; st.used=st.used.map(()=>false); rerender(); });
+    document.getElementById("checkBuild")?.addEventListener("click",()=>{
+      const attempt = st.tray.map(ci=>t.chips[ci]).join(" ");
+      const ok = t.accepted.includes(norm(attempt));
+      if(ok){ showFB(true,t.canonical); commit(true, attempt, t.canonical); return; }
+      st.tries++;
+      if(st.tries>=2){ showFB(false, t.canonical, "Порядок: подлежащее + am/is/are + …ing"); snaps[idx]={given:attempt||"—",ok:false,correctText:t.canonical}; }
+      else { const fb=document.getElementById("fb"); fb.className="fb no show"; fb.innerHTML=`<button class="close">✕</button>Почти! Попробуй ещё раз (осталась 1 попытка). <span class="hint">Проверь порядок слов.</span>`; fb.querySelector(".close").onclick=()=>fb.classList.remove("show"); }
+    });
+  }
+
+  if(t.type==="anagram"){
+    const inp=document.getElementById("anaIn");
+    const go=()=>{
+      const ok = norm(inp.value)===norm(t.answer);
+      showFB(ok, t.answer); commit(ok, inp.value||"—", t.answer);
+      if(ok) inp.disabled=true;
+    };
+    document.getElementById("anaCheck")?.addEventListener("click",go);
+    inp?.addEventListener("keydown",e=>{ if(e.key==="Enter") go(); });
+    setTimeout(()=>inp?.focus(),50);
+  }
+
+  if(t.type==="type"){
+    const inp=document.getElementById("typeIn");
+    let tries=0;
+    const go=()=>{
+      const ok = t.accepted.includes(norm(inp.value));
+      if(ok){ showFB(true,t.canonical); commit(true, inp.value, t.canonical); inp.disabled=true; return; }
+      tries++;
+      if(tries>=2){ showFB(false,t.canonical); snaps[idx]={given:inp.value||"—",ok:false,correctText:t.canonical}; inp.disabled=true; }
+      else { const fb=document.getElementById("fb"); fb.className="fb no show"; fb.innerHTML=`<button class="close">✕</button>Ещё раз! (осталась 1 попытка)`; fb.querySelector(".close").onclick=()=>fb.classList.remove("show"); inp.select(); }
+    };
+    document.getElementById("typeCheck")?.addEventListener("click",go);
+    inp?.addEventListener("keydown",e=>{ if(e.key==="Enter") go(); });
+    setTimeout(()=>inp?.focus(),50);
+  }
+
+  if(t.type==="boss"){
+    const st=t._state; const q=t._cur;
+    document.querySelectorAll(".opt").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const chosen=decodeURIComponent(btn.dataset.o);
+        const ok=norm(chosen)===norm(q.ans);
+        lockOpts(); btn.classList.add(ok?"correct":"wrong");
+        const be=document.getElementById("bossE");
+        if(ok){
+          st.hp=Math.max(0,st.hp-1); st.hits++;
+          addScore(); be?.classList.add("hit");
+          const fb=document.getElementById("fb"); fb.className="fb ok show"; fb.innerHTML="Удар! −1 HP ⚔️ +10 ⭐️";
+        } else {
+          st.hp=Math.min(t.hp, st.hp+1);
+          document.querySelectorAll(".opt").forEach(o=>{ if(norm(decodeURIComponent(o.dataset.o))===norm(q.ans)) o.classList.add("correct"); });
+          const fb=document.getElementById("fb"); fb.className="fb no show"; fb.innerHTML=`<button class="close">✕</button>Дракон вылечился (+1 HP). Правильно: <b>${q.ans}</b>`;
+          fb.querySelector(".close").onclick=()=>{ fb.classList.remove("show"); nextBoss(); };
+        }
+        st.qi++;
+        if(st.hp<=0){
+          snaps[idx]={given:"побеждён",ok:true,correctText:"",bossHits:st.hits};
+          setTimeout(()=>{ toast("Дракон побеждён! 🎉"); showNext(true); },900);
+        } else if(ok){
+          setTimeout(nextBoss, 1200);
+        }
+      });
+    });
+    function nextBoss(){ render(); }
+  }
+}
+
+/* ============================================================
+   ФИНАЛ
+   ============================================================ */
+function renderFinish(){
+  const th=starThresholds();
+  let stars=0;
+  if(score>=th.three) stars=3; else if(score>=th.two) stars=2; else if(score>=th.one) stars=1;
+  const starStr = "⭐️".repeat(stars) + "☆".repeat(3-stars);
+  const acc = totalScored? Math.round(correct/totalScored*100):0;
+  const msg = stars===3?"Чемпион спортивного дня!":stars===2?"Отличная игра!":stars===1?"Хорошая работа!":"Ты молодец, попробуй ещё раз!";
+  app.innerHTML = `
+    <div class="hud"><div class="hud-top"><div class="stage-pill">Финиш 🏁</div>
+      <div class="score-box"><span class="star">⭐️</span><span>${score}</span></div></div></div>
+    <div class="card"><div class="screen">
+      <div class="big-emoji">🏆</div>
+      <div class="title">${msg}</div>
+      <div class="stars-big">${starStr}</div>
+      <div class="lead">Очки: <b>${score}</b> из ${MAXSCORE()}<br>Верных ответов: <b>${correct}</b> из ${totalScored} (${acc}%)</div>
+      <div class="btn-row">
+        <button class="btn" id="againBtn">Играть снова 🔁</button>
+      </div>
+    </div></div>`;
+  document.getElementById("againBtn").addEventListener("click",start);
+}
+
+/* ============================================================
+   СТАРТ
+   ============================================================ */
+function renderStart(){
+  app.innerHTML = `<div class="card"><div class="screen">
+    <div class="big-emoji">⚽️🏃</div>
+    <div class="title">Спортивный день</div>
+    <div class="lead">Играй, отвечай и приведи спортсмена к кубку!<br>Английский · уровень A1</div>
+    <div class="rules">
+      🎯 За каждый верный ответ — <b>+10 очков</b><br>
+      ⚡️ Шкала энергии растёт — спортсмен бежит к 🏆<br>
+      🧩 8 этапов: пары, картинки, предложения, босс…<br>
+      ◀ Кнопка «Назад» — посмотреть прошлые ответы
+    </div>
+    <div class="btn-row"><button class="btn" id="startBtn">Старт ▶</button></div>
+  </div></div>`;
+  document.getElementById("startBtn").addEventListener("click",start);
+}
+function start(){
+  TASKS = buildTasks();
+  idx=0; maxIdx=0; score=0; correct=0; energy=0;
+  for(const k in snaps) delete snaps[k];
+  computeTotals();
+  render();
+}
+
+/* ---------- меняем фон по энергии ---------- */
+function updateBg(){
+  const e=energy/100;
+  // рассвет -> день -> закат (интерполяция двух остановок)
+  function lerp(a,b,x){return Math.round(a+(b-a)*x);}
+  let top,bot;
+  if(e<0.5){ const x=e/0.5;
+    top=[lerp(255,186,x),lerp(233,234,x),lerp(199,255,x)];
+    bot=[lerp(255,126,x),lerp(214,217,x),lerp(224,87,x)];
+  } else { const x=(e-0.5)/0.5;
+    top=[lerp(186,255,x),lerp(234,214,x),lerp(255,178,x)];
+    bot=[lerp(126,255,x),lerp(217,159,x),lerp(87,109,x)];
+  }
+  document.body.style.background=`linear-gradient(180deg, rgb(${top.join(",")}) 0%, rgb(${bot.join(",")}) 100%)`;
+}
+// хук: обновлять фон при изменении энергии
+const _bump=bumpEnergy;
+bumpEnergy=function(){ _bump(); updateBg(); };
+
+renderStart();
+</script>
+</body>
+</html>
